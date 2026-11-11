@@ -1,0 +1,50 @@
+
+# ==========================================
+# UNIVERSITY ACADEMIC MANAGEMENT SYSTEM
+# Git Ignore Configuration
+# ==========================================
+
+# Java and Maven build artifacts
+**/target/
+*.class
+*.log
+
+# IDE configuration
+.vscode/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.factorypath
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local Spring Boot configuration
+application-local.properties
+application-local.yml
+application-local.yaml
+application-secrets.properties
+application-secrets.yml
+application-secrets.yaml
+
+# Local database backups
+*.dump
+*.backup
+*.sql.gz
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Keep Maven Wrapper files tracked
+# Including .mvn/wrapper/, mvnw and mvnw.cmd
