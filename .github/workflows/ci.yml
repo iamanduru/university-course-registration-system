@@ -1,0 +1,63 @@
+
+name: Java CI
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+      - "ci/**"
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+
+        env:
+          POSTGRES_DB: university_academic_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_test_password
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd "pg_isready -U postgres -d university_academic_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci_test_password
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: Generate PostgreSQL schema
+        working-directory: backend
+        run: mvn --batch-mode --no-transfer-progress -DskipTests spring-boot:run
+
+      - name: Build and run all tests
+        working-directory: backend
+        run: mvn --batch-mode --no-transfer-progress clean verify
