@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -38,26 +40,23 @@ public class Department {
     )
     private String code;
 
-    // RELATIONSHIP 1:
     // One department has many students.
     @OneToMany(mappedBy = "department")
     private List<Student> students = new ArrayList<>();
 
-    // RELATIONSHIP 2:
     // One department employs many lecturers.
     @OneToMany(mappedBy = "department")
     private List<Lecturer> lecturers = new ArrayList<>();
 
-    // RELATIONSHIP 3:
     // One department offers many courses.
     @OneToMany(mappedBy = "department")
     private List<Course> courses = new ArrayList<>();
 
-    // RELATIONSHIP 5:
-    /*  One lecturer serves as the department head.
-    A lecturer may head at most one department.
-    Nullable during initial department setup.*/
-    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    // One lecturer can head at most one department. Nullable during initial department creation.
+    @OneToOne(
+        fetch = FetchType.LAZY,
+        optional = true
+    )
     @JoinColumn(
         name = "head_lecturer_id",
         unique = true,
@@ -69,7 +68,6 @@ public class Department {
     public Department() {
     }
 
-    // Constructor
     public Department(String name, String code) {
         this.name = name;
         this.code = code;
@@ -115,7 +113,7 @@ public class Department {
         this.code = code;
     }
 
-    // RELATIONSHIP MANAGEMENT METHODS
+    // RELATIONSHIP MANAGEMENT
 
     public void addStudent(Student student) {
         if (student == null) {
@@ -124,11 +122,13 @@ public class Department {
             );
         }
 
-        if (student.getDepartment() != null
-                && student.getDepartment() != this) {
-            student.getDepartment()
-                   .getStudents()
-                   .remove(student);
+        Department previousDepartment =
+            student.getDepartment();
+
+        if (previousDepartment != null
+                && previousDepartment != this) {
+            previousDepartment.getStudents()
+                .remove(student);
         }
 
         if (!students.contains(student)) {
@@ -160,7 +160,7 @@ public class Department {
             }
 
             previousDepartment.getLecturers()
-                              .remove(lecturer);
+                .remove(lecturer);
         }
 
         if (!lecturers.contains(lecturer)) {
@@ -177,11 +177,13 @@ public class Department {
             );
         }
 
-        if (course.getDepartment() != null
-                && course.getDepartment() != this) {
-            course.getDepartment()
-                  .getCourses()
-                  .remove(course);
+        Department previousDepartment =
+            course.getDepartment();
+
+        if (previousDepartment != null
+                && previousDepartment != this) {
+            previousDepartment.getCourses()
+                .remove(course);
         }
 
         if (!courses.contains(course)) {
@@ -191,23 +193,55 @@ public class Department {
         course.setDepartment(this);
     }
 
-    // Assign a lecturer as the department head.
-    public void setHeadLecturer(Lecturer lecturer) {
+    // DEPARTMENT HEAD MANAGEMENT
 
+    public void setHeadLecturer(Lecturer lecturer) {
         if (lecturer == null) {
             throw new IllegalArgumentException(
                 "Head lecturer cannot be null"
             );
         }
 
-        // The head must belong to this department.
         if (lecturer.getDepartment() != this) {
             throw new IllegalArgumentException(
-                "Head lecturer must belong to " +
-                "this department"
+                "Head lecturer must belong to this department"
             );
         }
 
         this.headLecturer = lecturer;
+    }
+
+    /* JPA LIFECYCLE VALIDATION
+
+     During initial creation, the head may be null
+     because the department must exist before
+     its lecturers can be persisted. */
+    @PrePersist
+    private void validateInitialDepartment() {
+        if (headLecturer != null) {
+            validateHeadMembership();
+        }
+    }
+
+    // Once a department is being updated, require a valid head lecturer.
+    @PreUpdate
+    private void validateDepartmentUpdate() {
+        if (headLecturer == null) {
+            throw new IllegalStateException(
+                "Department must have a head lecturer before update"
+            );
+        }
+
+        validateHeadMembership();
+    }
+
+    // Check that the selected head belongs to this department.
+    private void validateHeadMembership() {
+        if (headLecturer != null
+                && headLecturer.getDepartment() != this) {
+            throw new IllegalStateException(
+                "Department head must belong to the same department"
+            );
+        }
     }
 }

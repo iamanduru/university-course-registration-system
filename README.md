@@ -1,40 +1,48 @@
 # University Course Registration and Academic Management System
 
-**A Spring Boot and PostgreSQL academic management system focused on database modelling, entity relationships, and persistence using Spring Data JPA and Hibernate.**
+**A Spring Boot and PostgreSQL academic management system implementing university entities, relationships, and data persistence using Spring Data JPA and Hibernate.**
 
 **Course:** Web Technology and Internet  
 **Assessment:** Individual Assignment  
 **Student:** Mitchelle Anyango Anduru  
-**Registration Number:** 24752
+**Registration Number:** 24752  
+**Submission Date:** 16 November 2026
 
-**Implementation:** Model and Repository Layers  
-**Build Status:** Passed  
-**Automated Tests:** 7 Passed  
+**Implementation Scope:** Model and Repository Layers  
+**Java Version:** 17  
+**Spring Boot Version:** 4.1.2  
+**Local Test Results:** 10 Tests Passed  
 **Continuous Integration:** GitHub Actions
 
 ---
 
 ## 1. Project Overview
 
-The University Course Registration and Academic Management System is a Java-based application designed to support the structured management of university academic information.
+The University Course Registration and Academic Management System is a Java-based application designed to support the structured management of academic departments, students, lecturers, courses, and student course registrations.
 
-The project addresses challenges associated with manually maintained student records, departmental information, course assignments, lecturer records, and course registrations.
+The project addresses challenges associated with manually maintained academic records, including difficulties in managing student information, organizing departmental activities, assigning lecturers to courses, and tracking student registrations.
 
-Using **Spring Boot, Spring Data JPA, Hibernate, and PostgreSQL**, the application implements a relational data model that represents the university's academic structure and maintains relationships between its entities.
+Using **Java, Spring Boot, Spring Data JPA, Hibernate, and PostgreSQL**, the system implements a relational database model representing the university's academic structure.
 
-The implementation focuses on the **Model and Repository layers**, as specified in the assignment.
+The implementation focuses specifically on the **Model and Repository layers**, as required by the Web Technology and Internet individual assignment.
 
-### Project Objectives
+### 1.1 Project Objectives
 
-- Design a relational database for university academic management.
-- Identify appropriate entities, attributes, relationships, and cardinalities.
-- Implement one-to-one, one-to-many, many-to-one, and many-to-many relationships.
-- Manage lecturer-course assignments using a join table.
-- Represent student course registrations using a join entity.
-- Implement data persistence using Spring Data JPA repositories.
-- Generate and verify PostgreSQL tables using Hibernate.
-- Test entity relationships and repository operations.
-- Automate project verification using GitHub Actions.
+The project's objectives are to:
+
+1. Analyze the university's academic management requirements.
+2. Identify the necessary entities, attributes, and relationships.
+3. Determine relationship cardinalities and appropriate database keys.
+4. Design an Entity Relationship Diagram (ERD).
+5. Develop a relational PostgreSQL database schema.
+6. Implement JPA entities using Hibernate annotations.
+7. Implement Spring Data JPA repositories.
+8. Represent lecturer-course assignments using a many-to-many join table.
+9. Represent student course registrations using a join entity.
+10. Apply appropriate database constraints and relationship validation.
+11. Verify Hibernate table generation and entity mappings.
+12. Test repository operations and academic relationships.
+13. Automate compilation and testing using GitHub Actions.
 
 ---
 
@@ -42,134 +50,267 @@ The implementation focuses on the **Model and Repository layers**, as specified 
 
 | Technology | Version / Purpose |
 |---|---|
-| Java | 17 |
+| Java | JDK 17 |
 | Spring Boot | 4.1.2 |
-| Spring Data JPA | Repository and persistence operations |
-| Hibernate ORM | Entity mapping and database schema generation |
-| PostgreSQL | Relational database |
+| Spring Data JPA | Database persistence and repositories |
+| Hibernate ORM | Object-relational mapping and schema generation |
+| PostgreSQL | Relational database management |
 | Maven | Dependency management and build automation |
-| JUnit 5 | Automated testing |
-| VS Code | Development environment |
-| Git and GitHub | Version control and collaboration workflow |
+| JUnit 5 | Automated unit and integration testing |
+| Jakarta Persistence API | Entity mapping and lifecycle callbacks |
+| Visual Studio Code | Development environment |
+| Git | Version control |
+| GitHub | Source code repository and pull requests |
 | GitHub Actions | Continuous integration |
 
 ---
 
-## 3. Project Scope
+## 3. Project Scope and Architecture
 
-The assignment requires implementation of two application layers.
+The assignment requires implementation of the **Model and Repository layers only**.
 
-### Model Layer
+### 3.1 Model Layer
 
-The Model layer contains Java classes representing academic entities, their attributes, relationships, and persistence constraints.
+The Model layer represents the university's academic entities and their relationships.
 
-It uses Jakarta Persistence annotations including:
+It uses Jakarta Persistence annotations such as:
 
 - `@Entity`
 - `@Table`
 - `@Id`
 - `@GeneratedValue`
+- `@Column`
 - `@OneToOne`
 - `@OneToMany`
 - `@ManyToOne`
 - `@ManyToMany`
 - `@JoinColumn`
 - `@JoinTable`
+- `@Enumerated`
+- `@PrePersist`
+- `@PreUpdate`
 
-### Repository Layer
+The Model layer also contains relationship-management methods and lifecycle validation for selected academic integrity rules.
 
-The Repository layer uses Spring Data JPA interfaces extending `JpaRepository`.
+### 3.2 Repository Layer
 
-It supports database persistence operations, entity retrieval, and derived queries based on academic relationships.
+The Repository layer contains Spring Data JPA interfaces extending `JpaRepository`.
 
-**Scope boundary:** The current assignment does not implement REST controllers, service classes, authentication, a frontend, or an end-user registration interface.
+These repositories provide operations for:
+
+- Saving and updating entities.
+- Retrieving entities by primary key.
+- Finding records using unique academic identifiers.
+- Searching across entity relationships.
+- Checking record existence.
+- Managing persistence operations through JPA.
+
+Spring Data JPA generates the implementations of repository methods automatically.
+
+### 3.3 Scope Boundaries
+
+The following features are intentionally excluded because they are outside the assignment's required scope:
+
+- REST controllers and API endpoints.
+- Service layer implementation.
+- Frontend or graphical user interface.
+- User authentication and authorization.
+- Web-based registration forms.
+- Production deployment infrastructure.
+
+The project concentrates on accurate database modelling, persistence, and relationship verification.
 
 ---
 
 ## 4. System Entities
 
-The system contains six JPA entities.
+The system contains **six JPA entities**.
 
 | Entity | Description |
 |---|---|
-| Department | Represents an academic department and its designated head lecturer |
-| Student | Represents a university student assigned to a department |
-| StudentProfile | Stores personal details associated with a student |
-| Lecturer | Represents teaching staff employed by departments |
-| Course | Represents an academic course offered by a department |
-| CourseRegistration | Records student enrolment in courses and associated academic information |
+| Department | Represents an academic department and its designated head |
+| Student | Represents an admitted university student |
+| StudentProfile | Stores a student's personal information |
+| Lecturer | Represents academic teaching staff |
+| Course | Represents courses offered by departments |
+| CourseRegistration | Records student registration for academic courses |
 
-An additional `RegistrationStatus` enum represents the permitted registration states:
+### 4.1 Department
 
-- `PENDING`
-- `APPROVED`
-- `REJECTED`
+The Department entity contains:
 
-### 4.1 Course Registration Attributes
+- ID
+- Name
+- Unique department code
+- Head lecturer reference
+- Associated students
+- Associated lecturers
+- Associated courses
 
-Each registration contains:
+Each department offers courses, employs lecturers, and admits students into its academic unit.
+
+### 4.2 Student
+
+The Student entity contains:
+
+- ID
+- Student number
+- First name
+- Last name
+- Email
+- Department reference
+- Personal profile
+- Course registrations
+
+Each student is associated with one academic department and must have one personal profile when persisted through JPA.
+
+### 4.3 StudentProfile
+
+The StudentProfile entity contains:
+
+- ID
+- Date of birth
+- Gender
+- Phone number
+- Residential address
+- Student reference
+
+Each personal profile belongs to one student through a unique foreign key.
+
+### 4.4 Lecturer
+
+The Lecturer entity contains:
+
+- ID
+- Staff number
+- First name
+- Last name
+- Email
+- Department reference
+- Assigned courses
+
+Lecturers may teach several courses, and eligible lecturers may be designated as department heads.
+
+### 4.5 Course
+
+The Course entity contains:
+
+- ID
+- Course code
+- Course name
+- Credits
+- Department reference
+- Assigned lecturers
+- Course registrations
+
+Each course belongs to one department.
+
+### 4.6 CourseRegistration
+
+CourseRegistration represents the registration of a student for a particular course.
+
+It contains:
 
 | Attribute | Description |
 |---|---|
+| ID | Unique registration identifier |
+| Student | Student registering for the course |
+| Course | Course being registered |
 | Registration date | Date the registration was recorded |
 | Academic year | Academic period, such as 2026/2027 |
 | Semester | Semester of registration |
-| Status | PENDING, APPROVED, or REJECTED |
-| Grade | Student's grade, nullable before assessment |
+| Status | Registration approval status |
+| Grade | Grade obtained, nullable before assessment |
+
+### 4.7 RegistrationStatus Enum
+
+The application defines three registration statuses:
+
+```java
+public enum RegistrationStatus {
+    PENDING,
+    APPROVED,
+    REJECTED
+}
+```
+
+The status is persisted as a string using `@Enumerated(EnumType.STRING)`.
 
 ---
 
 ## 5. Entity Relationships
 
-The application implements the following relationships.
+The system implements eight direct JPA relationships.
 
-| Relationship | Cardinality | Implementation |
+| Relationship | Cardinality | JPA Implementation |
 |---|---|---|
-| Department–Student | One-to-Many | `@OneToMany` / `@ManyToOne` |
-| Department–Lecturer | One-to-Many | `@OneToMany` / `@ManyToOne` |
-| Department–Course | One-to-Many | `@OneToMany` / `@ManyToOne` |
+| Department–Student | One-to-Many | `@OneToMany`, `@ManyToOne` |
+| Department–Lecturer | One-to-Many | `@OneToMany`, `@ManyToOne` |
+| Department–Course | One-to-Many | `@OneToMany`, `@ManyToOne` |
 | Student–StudentProfile | One-to-One | `@OneToOne` |
 | Department–Head Lecturer | One-to-One reference | `@OneToOne` |
-| Lecturer–Course | Many-to-Many | `@ManyToMany` / `@JoinTable` |
-| Student–CourseRegistration | One-to-Many | `@OneToMany` / `@ManyToOne` |
-| Course–CourseRegistration | One-to-Many | `@OneToMany` / `@ManyToOne` |
+| Lecturer–Course | Many-to-Many | `@ManyToMany`, `@JoinTable` |
+| Student–CourseRegistration | One-to-Many | `@OneToMany`, `@ManyToOne` |
+| Course–CourseRegistration | One-to-Many | `@OneToMany`, `@ManyToOne` |
 
-### Lecturer–Course Relationship
+### 5.1 Lecturer–Course Many-to-Many Relationship
 
-Lecturers can teach multiple courses, while individual courses can be assigned to multiple lecturers.
+A lecturer may teach multiple courses, while a course may be taught by multiple lecturers.
 
-This relationship uses the `lecturer_courses` join table containing:
+This relationship is represented using the `lecturer_courses` join table.
+
+The table contains:
 
 - `lecturer_id`
 - `course_id`
 
-The two columns form a composite primary key.
+Both columns form a composite primary key.
 
-The relationship is implemented using `@ManyToMany` and `@JoinTable`, **without creating an additional Java entity**.
+The implementation uses `@ManyToMany` and `@JoinTable`.
 
-### Student–Course Relationship
+**No separate LecturerCourse Java entity is created**, in accordance with the assignment requirements.
 
-A student can register for multiple courses, and a course can have multiple registered students.
+### 5.2 Student–Course Relationship
 
-Because each registration contains additional academic information, the relationship is implemented through the `CourseRegistration` entity rather than a simple many-to-many association.
+A student may register for multiple courses, and each course may have multiple registered students.
 
-### Department Head Relationship
+Because registration records contain additional attributes, the relationship is implemented through the `CourseRegistration` join entity.
 
-Each department can designate a lecturer as its head.
+This allows the system to store registration date, academic year, semester, status, and grade for each registration.
 
-The Java model checks that a lecturer belongs to the relevant department before being assigned as its head through `setHeadLecturer()`.
+### 5.3 Student–StudentProfile Relationship
 
-The implementation supports a temporary null head reference during initial department creation to accommodate the circular relationship between departments and lecturers.
+Each student must have exactly one personal profile.
+
+The `student_profiles` table contains a unique, non-null `student_id` foreign key.
+
+The Java model uses bidirectional one-to-one mapping and lifecycle validation to maintain the relationship.
+
+### 5.4 Department–Head Lecturer Relationship
+
+A department designates a lecturer as its head.
+
+The department contains a `head_lecturer_id` foreign key referencing the Lecturer entity.
+
+The relationship is represented using a unique one-to-one reference.
+
+Department-head membership is checked through the Java model, with additional lifecycle validation for department updates.
 
 ---
 
 ## 6. Entity Relationship Diagram
 
-The ERD illustrates the system's entities, attributes, primary keys, foreign keys, and relationship cardinalities.
+The Entity Relationship Diagram illustrates:
 
-**[View the complete Entity Relationship Diagram](docs/erd.md)**
+- Academic entities and their attributes.
+- Primary keys and foreign keys.
+- Relationship cardinalities.
+- The lecturer-course join table.
+- The CourseRegistration join entity.
 
-The ERD is maintained in Mermaid format, allowing it to be reviewed and edited alongside the source code.
+The diagram is maintained using Mermaid notation, making it editable and suitable for version control.
+
+**[View the Entity Relationship Diagram](docs/erd.md)**
 
 ---
 
@@ -177,31 +318,37 @@ The ERD is maintained in Mermaid format, allowing it to be reviewed and edited a
 
 **Database name:** `university_academic_db`
 
-Hibernate generates seven PostgreSQL tables.
+**Database management system:** PostgreSQL
+
+Hibernate generates seven database tables:
 
 | Table | Purpose |
 |---|---|
-| `departments` | Department information and head lecturer |
-| `students` | Student identification and departmental membership |
+| `departments` | Department details and designated head lecturer |
+| `students` | Student information and department association |
 | `student_profiles` | Personal student information |
-| `lecturers` | Academic teaching staff |
-| `courses` | Academic courses |
-| `course_registrations` | Registration records and academic details |
-| `lecturer_courses` | Lecturer-course many-to-many join table |
+| `lecturers` | Lecturer records and departmental membership |
+| `courses` | Academic courses offered by departments |
+| `course_registrations` | Student registrations and academic details |
+| `lecturer_courses` | Lecturer-course teaching assignments |
 
-The database schema includes:
+### 7.1 Database Constraints
+
+The generated schema includes:
 
 - Seven primary keys.
 - Nine foreign keys.
 - Uniqueness constraints on selected academic identifiers.
-- A unique constraint for student profiles.
-- A composite primary key on `lecturer_courses`.
-- A composite unique constraint for course registrations.
-- A CHECK constraint for registration status values.
+- A unique student-profile association.
+- A composite primary key for lecturer-course assignments.
+- A composite unique constraint for student course registrations.
+- A CHECK constraint for permitted registration status values.
 
-### Duplicate Registration Prevention
+### 7.2 Duplicate Registration Prevention
 
-The following combination must be unique:
+A student cannot register twice for the same course in the same academic year and semester.
+
+This is enforced through:
 
 ```sql
 UNIQUE (
@@ -212,13 +359,95 @@ UNIQUE (
 )
 ```
 
-This prevents a student from registering for the same course more than once during the same academic year and semester.
+The database constraint prevents duplicate registrations even when registration status differs.
 
-**[View the complete relational database schema](docs/database-schema.md)**
+The behavior has been verified through a PostgreSQL integration test.
+
+**[View the Complete Relational Database Schema](docs/database-schema.md)**
 
 ---
 
-## 8. Project Structure
+## 8. Data Integrity and Lifecycle Validation
+
+The application implements database constraints and JPA lifecycle callbacks to strengthen academic data integrity.
+
+### 8.1 Mandatory Student Profiles
+
+The assignment requires every student to have exactly one personal profile.
+
+The `Student` entity implements:
+
+```java
+@PrePersist
+@PreUpdate
+private void validateMandatoryProfile() {
+    if (profile == null) {
+        throw new IllegalStateException(
+            "Every student must have a personal profile"
+        );
+    }
+
+    if (profile.getStudent() != this) {
+        throw new IllegalStateException(
+            "Student profile relationship is inconsistent"
+        );
+    }
+}
+```
+
+These callbacks check that a valid, consistently associated profile exists when a student is inserted or updated through JPA.
+
+The database also enforces uniqueness through `student_profiles.student_id`.
+
+**Verified behavior:**
+
+- JPA rejects persistence of a student without a personal profile.
+- A student with a correctly associated profile can be saved.
+- A profile cannot be associated with multiple students through the database's unique constraint.
+
+**Limitation:** JPA lifecycle validation does not independently protect against direct SQL operations that bypass the entity model.
+
+### 8.2 Department Head Integrity
+
+Each department should have a designated head lecturer belonging to that department.
+
+The `Department` entity provides `setHeadLecturer()` to validate membership before a lecturer is assigned as the head.
+
+The entity also implements:
+
+- `@PrePersist` for initial department validation.
+- `@PreUpdate` for mandatory head verification on department updates.
+
+The `@PreUpdate` callback rejects updates when:
+
+- No head lecturer has been assigned.
+- The selected head lecturer does not belong to the department.
+
+**Verified behavior:**
+
+- A valid lecturer can be designated as head.
+- Cross-department head assignment through the model setter is rejected.
+- Department updates without a head are rejected through JPA.
+
+**Initialization consideration:** A department can initially be created without a head because the department must first exist before its lecturers can be persisted.
+
+**Limitation:** Mandatory head completion and same-department membership are not independently enforced for direct database operations. Initial creation without a head remains permitted.
+
+### 8.3 Registration Integrity
+
+Course registrations use:
+
+- Mandatory student references.
+- Mandatory course references.
+- Academic period information.
+- Enumerated registration status.
+- Database uniqueness constraints.
+
+The application allows a null grade before the student has completed the course.
+
+---
+
+## 9. Project Structure
 
 ```text
 university-academic-system/
@@ -232,12 +461,39 @@ university-academic-system/
 │   │   ├── main/
 │   │   │   ├── java/com/university/academic/
 │   │   │   │   ├── model/
+│   │   │   │   │   ├── Department.java
+│   │   │   │   │   ├── Student.java
+│   │   │   │   │   ├── StudentProfile.java
+│   │   │   │   │   ├── Lecturer.java
+│   │   │   │   │   ├── Course.java
+│   │   │   │   │   ├── CourseRegistration.java
+│   │   │   │   │   └── RegistrationStatus.java
+│   │   │   │   │
 │   │   │   │   ├── repository/
+│   │   │   │   │   ├── DepartmentRepository.java
+│   │   │   │   │   ├── StudentRepository.java
+│   │   │   │   │   ├── StudentProfileRepository.java
+│   │   │   │   │   ├── LecturerRepository.java
+│   │   │   │   │   ├── CourseRepository.java
+│   │   │   │   │   └── CourseRegistrationRepository.java
+│   │   │   │   │
 │   │   │   │   └── BackendApplication.java
+│   │   │   │
 │   │   │   └── resources/
 │   │   │       └── application.properties
+│   │   │
 │   │   └── test/
 │   │       └── java/com/university/academic/
+│   │           ├── BackendApplicationTests.java
+│   │           ├── DepartmentRepositoryIntegrationTest.java
+│   │           ├── StudentProfileRepositoryIntegrationTest.java
+│   │           ├── LecturerCourseRepositoryIntegrationTest.java
+│   │           ├── CourseRegistrationRepositoryIntegrationTest.java
+│   │           ├── DuplicateRegistrationIntegrationTest.java
+│   │           ├── DepartmentHeadIntegrationTest.java
+│   │           ├── StudentMandatoryProfileIntegrationTest.java
+│   │           └── DepartmentHeadValidationIntegrationTest.java
+│   │
 │   ├── pom.xml
 │   ├── mvnw
 │   └── mvnw.cmd
@@ -247,39 +503,24 @@ university-academic-system/
 │   ├── erd.md
 │   ├── database-schema.md
 │   └── screenshots/
+│       ├── 01-database-tables.png
+│       ├── 02-foreign-key-relationships.png
+│       ├── 03-database-constraints.png
+│       ├── 04-hibernate-startup.png
+│       ├── 05-repository-tests.png
+│       └── 06-github-actions-ci.png
 │
 ├── .gitignore
 └── README.md
 ```
 
-### Model Package
-
-`backend/src/main/java/com/university/academic/model/`
-
-Contains the six entities and `RegistrationStatus` enum.
-
-### Repository Package
-
-`backend/src/main/java/com/university/academic/repository/`
-
-Contains:
-
-- `DepartmentRepository`
-- `StudentRepository`
-- `StudentProfileRepository`
-- `LecturerRepository`
-- `CourseRepository`
-- `CourseRegistrationRepository`
-
-Each repository extends `JpaRepository` and includes relevant derived query methods.
-
 ---
 
-## 9. Local Development Setup
+## 10. Local Development Setup
 
-### Prerequisites
+### 10.1 Prerequisites
 
-Ensure the following are installed:
+The following tools are required:
 
 - Java JDK 17 or later
 - Apache Maven
@@ -288,7 +529,7 @@ Ensure the following are installed:
 - Git
 - Visual Studio Code or another Java-compatible IDE
 
-### Step 1 — Clone the Repository
+### 10.2 Clone the Repository
 
 ```bash
 git clone https://github.com/iamanduru/university-course-registration-system.git
@@ -296,7 +537,7 @@ git clone https://github.com/iamanduru/university-course-registration-system.git
 cd university-course-registration-system/backend
 ```
 
-### Step 2 — Create the PostgreSQL Database
+### 10.3 Create the PostgreSQL Database
 
 Using pgAdmin, create a database named:
 
@@ -304,27 +545,28 @@ Using pgAdmin, create a database named:
 university_academic_db
 ```
 
-The local application configuration uses PostgreSQL on port `5432`.
+The local application expects PostgreSQL to be available on port `5432`.
 
-### Step 3 — Configure Database Credentials
+### 10.4 Configure Database Credentials
 
-The application reads its database credentials from environment variables.
+The application reads PostgreSQL credentials from environment variables.
 
 In Windows PowerShell:
 
 ```powershell
 $env:DB_USERNAME = "postgres"
+
 $env:DB_PASSWORD = [System.Net.NetworkCredential]::new(
     "",
     (Read-Host -AsSecureString "PostgreSQL password")
 ).Password
 ```
 
-Use the PostgreSQL username configured for your environment.
+Replace `postgres` with your configured database username if different.
 
-The password is entered securely and is not stored in the repository.
+The password is not hardcoded in the repository.
 
-The application uses the following Spring Boot configuration:
+The application's datasource configuration is:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/university_academic_db
@@ -333,9 +575,9 @@ spring.datasource.password=${DB_PASSWORD}
 spring.datasource.driver-class-name=org.postgresql.Driver
 ```
 
-Environment variables must be available in the terminal session used to start the application.
+Environment variables must be available in the same terminal session used to run the application.
 
-### Step 4 — Compile the Application
+### 10.5 Compile the Project
 
 From the `backend` directory:
 
@@ -343,49 +585,62 @@ From the `backend` directory:
 mvn clean compile
 ```
 
-Expected outcome:
+Expected output:
 
 ```text
 BUILD SUCCESS
 ```
 
-### Step 5 — Start Spring Boot
+### 10.6 Run Spring Boot
 
 ```bash
 mvn spring-boot:run
 ```
 
-During local development, Hibernate is configured with:
+During local development, Hibernate uses:
 
 ```properties
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-This allows Hibernate to create or update the required database tables based on the JPA entity mappings.
+This allows Hibernate to generate or update the required database tables based on the JPA mappings.
 
-A successful startup initializes the PostgreSQL connection pool, Hibernate, JPA EntityManagerFactory, and six repositories.
+Successful initialization includes:
 
-Because this assignment does not include a web interface or continuously running application component, Spring Boot may start and exit normally.
+- PostgreSQL connection pool startup.
+- Hibernate ORM initialization.
+- JPA EntityManagerFactory initialization.
+- Discovery of six JPA repositories.
+- Successful Spring Boot application startup.
 
-**Note:** Hibernate's `update` mode is used for local development and assignment demonstration. It is not intended as a production database migration strategy.
+Because the assignment does not include a web application layer, the application may terminate normally after startup.
+
+**Note:** Hibernate's `update` setting is used for local development and demonstration, not as a production database migration strategy.
 
 ---
 
-## 10. Automated Testing
+## 11. Automated Testing
 
-The project includes seven automated tests.
+The project contains **10 automated tests across nine test classes**.
 
-| Test | Purpose |
-|---|---|
-| BackendApplicationTests | Verifies Spring Boot application context initialization |
-| DepartmentRepositoryIntegrationTest | Tests department persistence and retrieval |
-| StudentProfileRepositoryIntegrationTest | Tests the one-to-one student-profile relationship |
-| LecturerCourseRepositoryIntegrationTest | Tests the many-to-many lecturer-course association |
-| CourseRegistrationRepositoryIntegrationTest | Tests course registration persistence and queries |
-| DuplicateRegistrationIntegrationTest | Verifies duplicate registration rejection |
-| DepartmentHeadIntegrationTest | Tests valid department-head assignment and rejection of cross-department assignments through the model |
+The tests verify Spring Boot initialization, repository persistence, entity relationships, and selected academic integrity rules.
 
-### Running the Tests
+### 11.1 Test Coverage
+
+| Test Class | Purpose | Tests |
+|---|---|---|
+| BackendApplicationTests | Verifies Spring Boot context initialization | 1 |
+| DepartmentRepositoryIntegrationTest | Tests department persistence and retrieval | 1 |
+| StudentProfileRepositoryIntegrationTest | Tests student-profile persistence and retrieval | 1 |
+| LecturerCourseRepositoryIntegrationTest | Tests lecturer-course many-to-many assignments | 1 |
+| CourseRegistrationRepositoryIntegrationTest | Tests registration persistence and derived queries | 1 |
+| DuplicateRegistrationIntegrationTest | Tests duplicate registration rejection | 1 |
+| DepartmentHeadIntegrationTest | Tests department-head assignment and membership | 1 |
+| StudentMandatoryProfileIntegrationTest | Tests rejection of missing profiles and successful valid persistence | 2 |
+| DepartmentHeadValidationIntegrationTest | Tests rejection of department updates without a head | 1 |
+| **Total** | | **10** |
+
+### 11.2 Running the Tests
 
 From the `backend` directory:
 
@@ -393,175 +648,248 @@ From the `backend` directory:
 mvn clean test
 ```
 
-The local integration tests use the configured PostgreSQL database.
+The integration tests use the configured PostgreSQL database.
 
-The test cases use transactional rollback so their test records are not permanently retained.
+They use transactional rollback to prevent test records from being permanently retained.
 
-The integration tests also use Hibernate schema validation to check the existing database mappings.
+The focused JPA integration tests use Hibernate schema validation to verify compatibility with the existing database structure.
 
-### Verified Local Results
+### 11.3 Verified Local Test Results
+
+The complete test suite was executed successfully on 16 November 2026.
 
 ```text
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
 
 BUILD SUCCESS
 ```
 
-All seven tests passed successfully during local verification.
+All 10 tests passed with zero failures and zero errors.
+
+These tests verify that the implementation continues to operate correctly after the latest JPA integrity improvements.
 
 ---
 
-## 11. Continuous Integration
+## 12. Continuous Integration — GitHub Actions
 
-The project uses **GitHub Actions** to automate compilation and testing.
+The project implements continuous integration using GitHub Actions.
 
-Workflow file:
+**Workflow:** `.github/workflows/ci.yml`
 
-`.github/workflows/ci.yml`
+The workflow runs on configured development branch pushes and pull requests targeting `main`.
 
-The workflow runs on:
+### 12.1 CI Pipeline
 
-- Pushes to `main` and configured development branches.
-- Pull requests targeting `main`.
+The workflow performs the following operations:
 
-### CI Pipeline
-
-The workflow:
-
-1. Checks out the repository.
+1. Checks out the GitHub repository.
 2. Configures Java 17 using Eclipse Temurin.
 3. Starts a temporary PostgreSQL 18 service.
 4. Generates the Hibernate database schema.
-5. Runs the Maven verification lifecycle.
-6. Reports the final build and test results.
+5. Runs Maven compilation and verification.
+6. Reports the results through GitHub Actions.
 
-### CI Verification
+### 12.2 CI Environment
 
-The workflow has been executed successfully on GitHub.
+The GitHub Actions environment uses a temporary PostgreSQL instance with test-only credentials.
 
-The CI environment uses a temporary PostgreSQL instance with test-only credentials. It does not require access to the developer's local PostgreSQL database.
+The workflow does not access the developer's personal PostgreSQL database.
 
-**[View GitHub Actions workflows](https://github.com/iamanduru/university-course-registration-system/actions)**
+No additional local test database is required.
+
+### 12.3 CI Verification Status
+
+The existing Java CI workflow has previously completed successfully on GitHub for the main Model and Repository implementation.
+
+The latest mandatory-relationship improvements have passed all 10 tests locally. Their CI status will be confirmed through the final pull request before merging into `main`.
+
+**[View GitHub Actions](https://github.com/iamanduru/university-course-registration-system/actions)**
 
 ---
 
-## 12. Verification Evidence
+## 13. Verification Evidence
 
-Screenshots of the database, application startup, automated tests, and CI pipeline are available in the repository.
+Screenshots demonstrating the database structure, entity mappings, application startup, automated tests, and CI pipeline are available in `docs/screenshots/`.
 
-| Evidence | Description |
+| Screenshot | Evidence |
 |---|---|
-| [01 — Database Tables](docs/screenshots/01-database-tables.png) | Seven Hibernate-generated PostgreSQL tables |
+| [01 — Database Tables](docs/screenshots/01-database-tables.png) | Seven PostgreSQL tables generated by Hibernate |
 | [02 — Foreign Key Relationships](docs/screenshots/02-foreign-key-relationships.png) | Nine verified foreign key relationships |
-| [03 — Database Constraints](docs/screenshots/03-database-constraints.png) | Primary keys, unique constraints, and registration status check |
-| [04 — Hibernate Startup](docs/screenshots/04-hibernate-startup.png) | Successful Spring Boot and Hibernate initialization |
-| [05 — Repository Tests](docs/screenshots/05-repository-tests.png) | Seven automated tests passed |
-| [06 — GitHub Actions CI](docs/screenshots/06-github-actions-ci.png) | Successful GitHub Actions execution |
+| [03 — Database Constraints](docs/screenshots/03-database-constraints.png) | Primary keys, unique constraints, and registration status restriction |
+| [04 — Hibernate Startup](docs/screenshots/04-hibernate-startup.png) | Successful application and Hibernate initialization |
+| [05 — Repository Tests](docs/screenshots/05-repository-tests.png) | Original successful seven-test suite |
+| [06 — GitHub Actions CI](docs/screenshots/06-github-actions-ci.png) | Previously successful GitHub Actions workflow |
 
-### Database Table Generation
+The repository's earlier test screenshot records the original seven-test suite. The latest 10-test verification is recorded in the Maven output and will be reflected in the final evidence after updating the screenshot.
 
-![PostgreSQL tables generated by Hibernate](docs/screenshots/01-database-tables.png)
+### 13.1 PostgreSQL Table Generation
 
-### Foreign Key Verification
+![Hibernate-generated database tables](docs/screenshots/01-database-tables.png)
+
+### 13.2 Foreign Key Relationships
 
 ![PostgreSQL foreign key relationships](docs/screenshots/02-foreign-key-relationships.png)
 
-### Automated Test Results
+### 13.3 Database Constraints
 
-![Maven automated test results](docs/screenshots/05-repository-tests.png)
+![PostgreSQL database constraints](docs/screenshots/03-database-constraints.png)
+
+### 13.4 Repository Testing
+
+![Repository integration test results](docs/screenshots/05-repository-tests.png)
+
+### 13.5 GitHub Actions CI
+
+![GitHub Actions execution](docs/screenshots/06-github-actions-ci.png)
 
 ---
 
-## 13. Design Decisions and Known Limitations
+## 14. Design Decisions and Known Limitations
 
-### Entity Identity
+### 14.1 Entity Identity
 
 All six JPA entities use generated `Long` primary keys.
 
-The lecturer-course join table uses a composite primary key instead of an additional generated identifier.
+The lecturer-course join table uses a composite primary key consisting of its two foreign keys.
 
-### Student Profile Integrity
+### 14.2 Student Profile Integrity
 
-The database uses a unique, non-null foreign key to prevent multiple profiles from being associated with the same student.
+The Student entity uses `@PrePersist` and `@PreUpdate` to validate profile existence and relationship consistency during JPA insert and update operations.
 
-The Java model provides `Student.setProfile()` to manage the association.
+The `student_profiles.student_id` foreign key is unique and non-null.
 
-However, the current database schema does not independently enforce the existence of a profile for every saved student.
+The mandatory-profile behavior is covered by two automated integration tests.
 
-### Department Head Integrity
+Direct SQL operations that bypass JPA are not independently covered by the lifecycle validation.
 
-The Java model verifies department membership when assigning a head lecturer through `setHeadLecturer()`.
+### 14.3 Department Head Integrity
 
-The database permits a temporarily null head reference during department initialization because of the circular reference between departments and lecturers.
+A department must have a head lecturer who belongs to the department.
 
-Database-level enforcement of head membership and mandatory head completion is not implemented.
+The Java model checks head membership during assignment.
 
-### Additional Data Validation
+The `@PreUpdate` callback rejects department updates without a head and checks membership consistency.
 
-The schema enforces required columns, selected uniqueness constraints, foreign keys, and registration status restrictions.
+Initial creation without a head remains permitted because of the circular relationship between departments and lecturers.
 
-Some additional business rules, such as requiring strictly positive course credits, remain outside the currently implemented database constraints.
+The implementation does not independently enforce head completion or same-department membership for direct SQL operations.
 
-### Application Scope
+### 14.4 Course Registration Integrity
 
-The project intentionally does not include controllers, service classes, frontend functionality, or authentication because these are outside the assignment's specified implementation scope.
+Duplicate course registrations are prevented by a composite database unique constraint.
+
+Registration status is restricted to:
+
+- PENDING
+- APPROVED
+- REJECTED
+
+Registration grades may remain null until assessment is complete.
+
+### 14.5 Additional Validation
+
+The schema enforces mandatory columns, foreign keys, and selected uniqueness constraints.
+
+Some additional business rules, such as strictly positive course credits, are not separately enforced by database CHECK constraints in the current implementation.
+
+### 14.6 Implementation Scope
+
+The application does not include controllers, a service layer, user authentication, or a frontend.
+
+This is intentional and consistent with the assignment's required scope.
 
 ---
 
-## 14. Requirements Documentation
+## 15. Software Engineering Practices
 
-The full analysis and design materials are maintained separately:
+The project follows structured development and verification practices.
 
-- **[Requirements Analysis](docs/requirements-analysis.md)** — problem analysis, entities, attributes, relationships, cardinalities, and design decisions.
-- **[Entity Relationship Diagram](docs/erd.md)** — logical ERD showing the entities and their relationships.
-- **[Relational Database Schema](docs/database-schema.md)** — PostgreSQL tables, primary keys, foreign keys, constraints, and relational structure.
+### 15.1 Version Control
 
-These documents provide the design basis for the Hibernate implementation.
+Git and GitHub are used to track changes.
 
----
+Development includes:
 
-## 15. Development and Version Control Practices
-
-The project uses Git and GitHub for source control.
-
-Development practices include:
-
-- Focused feature branches.
+- A stable `main` branch.
+- Focused feature and fix branches.
 - Descriptive Conventional Commit messages.
-- Pull requests for feature integration.
-- Automated CI verification.
-- Source code and database design documentation.
-- Exclusion of local secrets and build artifacts using `.gitignore`.
+- Pull requests for reviewing and merging changes.
 
-Database passwords are not committed to the repository.
+### 15.2 Continuous Integration
+
+GitHub Actions automates compilation and testing for configured events.
+
+Changes are verified before merging into the main branch.
+
+### 15.3 Security Practices
+
+- Database passwords are not hardcoded.
+- Credentials are provided through environment variables.
+- Build outputs and local secrets are excluded through `.gitignore`.
+- Temporary CI credentials are separated from local credentials.
+- Sensitive information is not required in repository documentation.
+
+### 15.4 Documentation
+
+The repository contains:
+
+- Requirements analysis.
+- Entity Relationship Diagram.
+- Relational database schema.
+- Complete Java source code.
+- Automated tests.
+- GitHub Actions workflow.
+- Verification screenshots.
+- Setup and testing instructions.
 
 ---
 
 ## 16. Assignment Deliverables
 
-| Required Deliverable | Location |
+The project addresses the required deliverables as follows.
+
+| Lecturer's Deliverable | Repository Location |
 |---|---|
 | Problem analysis and identified entities | `docs/requirements-analysis.md` |
 | Entity Relationship Diagram | `docs/erd.md` |
 | Relational database schema | `docs/database-schema.md` |
-| Complete Spring Boot source code | `backend/src/main/` |
-| PostgreSQL generated tables and relationships | Database implementation and evidence screenshots |
-| Screenshots of mappings and table generation | `docs/screenshots/` |
-| GitHub repository | Project repository |
+| Spring Boot source code | `backend/src/main/java/` |
+| PostgreSQL generated tables and relationships | PostgreSQL implementation and verification evidence |
+| Table generation and relationship screenshots | `docs/screenshots/` |
+| GitHub repository link | Project repository |
+
+### Supporting Documentation
+
+- [Requirements Analysis](docs/requirements-analysis.md)
+- [Entity Relationship Diagram](docs/erd.md)
+- [Relational Database Schema](docs/database-schema.md)
+- [GitHub Actions](https://github.com/iamanduru/university-course-registration-system/actions)
 
 ---
 
 ## 17. Conclusion
 
-The University Course Registration and Academic Management System demonstrates relational database modelling and persistence using Java, Spring Boot, Hibernate, Spring Data JPA, and PostgreSQL.
+The University Course Registration and Academic Management System demonstrates the implementation of relational data modelling and persistence using Java, Spring Boot, Hibernate, Spring Data JPA, and PostgreSQL.
 
-The implementation includes six JPA entities, six repository interfaces, seven generated PostgreSQL tables, and the required academic relationships.
+The system includes:
 
-Database mappings were verified through PostgreSQL inspection and automated integration testing, with all seven tests passing locally and the GitHub Actions CI workflow completing successfully.
+- Six JPA entities.
+- Six Spring Data JPA repositories.
+- Eight direct entity relationships.
+- Seven Hibernate-generated PostgreSQL tables.
+- Nine verified foreign keys.
+- A lecturer-course join table.
+- A CourseRegistration join entity.
+- Database uniqueness and status constraints.
+- JPA lifecycle validation for student profiles and department-head updates.
+- Ten passing automated tests.
+- A GitHub Actions continuous integration workflow.
 
-The project provides a structured foundation for academic data management while remaining within the Model and Repository scope of the individual assignment.
+The project provides a structured academic data model and verified persistence layer while adhering to the Model and Repository scope required by the individual assignment.
 
 ---
 
-**Web Technology and Internet — Individual Assignment**  
-**Submission:** GitHub Repository Link
+**Web Technology and Internet — Individual Assignment**
+
+**Student:** Mitchelle Anyango Anduru  
+**Submission Date:** 16 November 2026

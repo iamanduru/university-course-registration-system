@@ -15,6 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -54,8 +56,7 @@ public class Student {
     )
     private String email;
 
-    // RELATIONSHIP 1:
-    // Many students belong to one department.
+    // RELATIONSHIP 1 => Each student belongs to one department.
     @ManyToOne(
         fetch = FetchType.LAZY,
         optional = false
@@ -66,9 +67,7 @@ public class Student {
     )
     private Department department;
 
-    // RELATIONSHIP 4:
-    // One student has one personal profile.
-    // StudentProfile owns the foreign key.
+    // RELATIONSHIP 4 => Each student must have exactly one profile. StudentProfile owns the foreign key.
     @OneToOne(
         mappedBy = "student",
         cascade = {
@@ -78,9 +77,7 @@ public class Student {
     )
     private StudentProfile profile;
 
-    // RELATIONSHIP 7:
-    // One student can have multiple registrations.
-    // CourseRegistration owns the foreign key.
+    // RELATIONSHIP 7 => One student can have multiple registrations.
     @OneToMany(mappedBy = "student")
     private List<CourseRegistration> registrations =
         new ArrayList<>();
@@ -160,7 +157,6 @@ public class Student {
 
     // RELATIONSHIP MANAGEMENT
 
-    // Assign a personal profile to this student.
     public void setProfile(StudentProfile profile) {
 
         if (profile == null) {
@@ -169,7 +165,8 @@ public class Student {
             );
         }
 
-        if (this.profile != null && this.profile != profile) {
+        if (this.profile != null
+                && this.profile != profile) {
             throw new IllegalStateException(
                 "Student already has a profile"
             );
@@ -183,10 +180,11 @@ public class Student {
         }
 
         this.profile = profile;
+
+        // Synchronize the owning side.
         profile.setStudent(this);
     }
 
-    // Add a course registration to this student.
     public void addRegistration(
         CourseRegistration registration
     ) {
@@ -196,22 +194,42 @@ public class Student {
             );
         }
 
-        // Remove from the previous student's
-        // in-memory collection if reassigned.
         Student previousStudent =
             registration.getStudent();
 
         if (previousStudent != null
                 && previousStudent != this) {
             previousStudent.getRegistrations()
-                           .remove(registration);
+                .remove(registration);
         }
 
         if (!registrations.contains(registration)) {
             registrations.add(registration);
         }
 
-        // Synchronize the owning side.
         registration.setStudent(this);
+    }
+
+    /* ENTITY LIFECYCLE VALIDATION
+
+     Reject JPA inserts or updates if the student
+     has no personal profile or the association
+     is inconsistent.*/
+
+    @PrePersist
+    @PreUpdate
+    private void validateMandatoryProfile() {
+
+        if (profile == null) {
+            throw new IllegalStateException(
+                "Every student must have a personal profile"
+            );
+        }
+
+        if (profile.getStudent() != this) {
+            throw new IllegalStateException(
+                "Student profile relationship is inconsistent"
+            );
+        }
     }
 }
